@@ -1,0 +1,15 @@
+---
+# Renders AVD structured configs, EOS device configs, and fabric
+# documentation from group_vars/. Pure local rendering - touches no devices.
+- name: Build fabric configurations and documentation
+  hosts: FABRIC
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Generate AVD structured configurations and fabric documentation
+      ansible.builtin.import_role:
+        name: arista.avd.eos_designs
+
+    - name: Generate EOS device configurations and device documentation
+      ansible.builtin.import_role:
+        name: arista.avd.eos_cli_config_gen

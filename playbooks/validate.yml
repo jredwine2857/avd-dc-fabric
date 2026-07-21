@@ -1,0 +1,11 @@
+---
+# Post-deploy validation against live devices via eAPI (ANTA test suite),
+# e.g. BGP underlay/overlay session state, EVPN route counts, MLAG status.
+# Requires EOS_USERNAME/EOS_PASSWORD env vars (see group_vars/FABRIC/fabric_ansible_connectivity.yml).
+- name: Validate fabric state
+  hosts: FABRIC
+  gather_facts: false
+  tasks:
+    - name: Run ANTA validation suite
+      ansible.builtin.import_role:
+        name: arista.avd.anta_runner

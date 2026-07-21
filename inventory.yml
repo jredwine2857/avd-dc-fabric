@@ -1,0 +1,54 @@
+---
+# 5-stage Clos: a SUPERSPINES tier interconnects per-pod SPINE/LEAF PODs.
+# Add more pods by copying a POD1-style block and adding it under FABRIC.children,
+# then adding a matching group_vars/POD<N>/ file.
+all:
+  children:
+    FABRIC:
+      children:
+        SUPERSPINES:
+          hosts:
+            dc1-ss1:
+              ansible_host: 192.0.2.11
+            dc1-ss2:
+              ansible_host: 192.0.2.12
+        POD1:
+          children:
+            POD1_SPINES:
+              hosts:
+                dc1-pod1-spine1:
+                  ansible_host: 192.0.2.21
+                dc1-pod1-spine2:
+                  ansible_host: 192.0.2.22
+            POD1_LEAFS:
+              hosts:
+                dc1-pod1-leaf1a:
+                  ansible_host: 192.0.2.31
+                dc1-pod1-leaf1b:
+                  ansible_host: 192.0.2.32
+                dc1-pod1-leaf2a:
+                  ansible_host: 192.0.2.33
+                dc1-pod1-leaf2b:
+                  ansible_host: 192.0.2.34
+        POD2:
+          children:
+            POD2_SPINES:
+              hosts:
+                dc1-pod2-spine1:
+                  ansible_host: 192.0.2.41
+                dc1-pod2-spine2:
+                  ansible_host: 192.0.2.42
+            POD2_LEAFS:
+              hosts:
+                dc1-pod2-leaf1a:
+                  ansible_host: 192.0.2.51
+                dc1-pod2-leaf1b:
+                  ansible_host: 192.0.2.52
+                dc1-pod2-leaf2a:
+                  ansible_host: 192.0.2.53
+                dc1-pod2-leaf2b:
+                  ansible_host: 192.0.2.54
+    EVPN_SERVICES:
+      children:
+        POD1_LEAFS:
+        POD2_LEAFS:

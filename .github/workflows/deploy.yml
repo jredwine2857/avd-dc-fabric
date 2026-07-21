@@ -1,0 +1,54 @@
+---
+name: CD - Deploy Fabric to CloudVision
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_change_control:
+        description: "Approve and run the CloudVision Change Control automatically (otherwise it's left pending approval in CVaaS)"
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    name: Build and push to CVaaS
+    runs-on: ubuntu-latest
+    # Configure this environment in repo Settings -> Environments to require
+    # manual reviewer approval before this job is allowed to run.
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ansible + pyavd
+        run: pip install -r requirements.txt
+
+      - name: Install Ansible collections
+        run: ansible-galaxy collection install -r requirements.yml
+
+      - name: Render structured configs and device configs
+        run: ansible-playbook playbooks/build.yml
+
+      - name: Deploy to CloudVision (CVaaS)
+        env:
+          CV_SERVER: ${{ secrets.CV_SERVER }}
+          CV_TOKEN: ${{ secrets.CV_TOKEN }}
+        run: >
+          ansible-playbook playbooks/deploy.yml
+          -e cv_run_change_control=${{ inputs.run_change_control || false }}
+
+      - name: Upload generated configs and documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: avd-deploy-output
+          path: |
+            intended/
+            documentation/
+          retention-days: 30

@@ -1,0 +1,12 @@
+---
+# eAPI connectivity for the anta_runner validation role (playbooks/validate.yml).
+# Credentials come from environment variables (populated from GitHub Actions
+# secrets in CI, or your shell locally) - never hardcode device credentials.
+ansible_connection: ansible.netcommon.httpapi
+ansible_network_os: arista.eos.eos
+ansible_user: "{{ lookup('env', 'EOS_USERNAME') }}"
+ansible_password: "{{ lookup('env', 'EOS_PASSWORD') }}"
+ansible_become: true
+ansible_become_method: enable
+ansible_httpapi_use_ssl: true
+ansible_httpapi_validate_certs: false

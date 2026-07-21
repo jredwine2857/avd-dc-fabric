@@ -1,0 +1,57 @@
+---
+# Pod 2 - mirrors POD1's structure with non-overlapping ASN/id/pool blocks
+# so pods can be added independently without central coordination.
+
+spine:
+  defaults:
+    platform: CHANGE_ME_PLATFORM_SKU
+    bgp_as: 65002
+    loopback_ipv4_pool: 10.255.0.0/16
+    uplink_switches: [dc1-ss1, dc1-ss2]
+    uplink_ipv4_pool: 10.255.129.0/24     # POD2-only p2p pool (spine <-> super-spine)
+    evpn_route_servers: [dc1-ss1, dc1-ss2]
+  nodes:
+    - name: dc1-pod2-spine1
+      id: 211
+      mgmt_ip: 192.0.2.41/24
+      uplink_switch_interfaces: [Ethernet3, Ethernet3]  # -> dc1-ss1/ss2 Et3
+    - name: dc1-pod2-spine2
+      id: 212
+      mgmt_ip: 192.0.2.42/24
+      uplink_switch_interfaces: [Ethernet4, Ethernet4]  # -> dc1-ss1/ss2 Et4
+
+l3leaf:
+  defaults:
+    platform: CHANGE_ME_PLATFORM_SKU
+    bgp_as: 65151-65200
+    loopback_ipv4_pool: 10.255.0.0/16        # Loopback0 (underlay)
+    vtep_loopback_ipv4_pool: 10.255.16.0/20  # Loopback1 (VTEP source)
+    uplink_switches: [dc1-pod2-spine1, dc1-pod2-spine2]
+    uplink_ipv4_pool: 10.255.129.0/24        # POD2-only p2p pool (leaf <-> spine)
+    mlag_peer_ipv4_pool: 10.255.252.0/24
+    mlag_peer_l3_ipv4_pool: 10.255.251.0/24
+    virtual_router_mac_address: 00:1c:73:00:00:99
+    spanning_tree_mode: mstp
+    spanning_tree_priority: 16384
+
+  node_groups:
+    - group: dc1-pod2-leaf1
+      nodes:
+        - name: dc1-pod2-leaf1a
+          id: 221
+          mgmt_ip: 192.0.2.51/24
+          uplink_switch_interfaces: [Ethernet5, Ethernet5]  # -> pod2 spines Et5
+        - name: dc1-pod2-leaf1b
+          id: 222
+          mgmt_ip: 192.0.2.52/24
+          uplink_switch_interfaces: [Ethernet6, Ethernet6]  # -> pod2 spines Et6
+    - group: dc1-pod2-leaf2
+      nodes:
+        - name: dc1-pod2-leaf2a
+          id: 223
+          mgmt_ip: 192.0.2.53/24
+          uplink_switch_interfaces: [Ethernet7, Ethernet7]  # -> pod2 spines Et7
+        - name: dc1-pod2-leaf2b
+          id: 224
+          mgmt_ip: 192.0.2.54/24
+          uplink_switch_interfaces: [Ethernet8, Ethernet8]  # -> pod2 spines Et8

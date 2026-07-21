@@ -1,0 +1,17 @@
+---
+# Tenant / VRF / VLAN / VNI definitions go here. Left empty on purpose -
+# the fabric builds and passes CI with just underlay + EVPN overlay and no
+# tenants defined. Add tenants when you're ready, e.g.:
+#
+# tenants:
+#   - name: TENANT_A
+#     mac_vrf_vni_base: 10000
+#     vrfs:
+#       - name: VRF_A
+#         vrf_vni: 10
+#         svis:
+#           - id: 100
+#             name: EXAMPLE
+#             enabled: true
+#             ip_address_virtual: 10.0.0.1/24
+tenants: []

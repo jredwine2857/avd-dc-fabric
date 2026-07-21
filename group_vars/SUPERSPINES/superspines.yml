@@ -1,0 +1,22 @@
+---
+# Super-spine tier: interconnects all pods. Pure underlay/overlay transit -
+# no tenant services live here.
+super_spine:
+  defaults:
+    # REPLACE with your real Arista EOS platform SKU (e.g. 7508R3, 7280R3).
+    platform: CHANGE_ME_PLATFORM_SKU
+    bgp_as: 65000
+    # Shared underlay loopback pool across the whole fabric - safe because
+    # every node's `id` below is globally unique (see README "ASN & id plan").
+    loopback_ipv4_pool: 10.255.0.0/16
+    # evpn_role: server means these devices relay EVPN routes between pods
+    # (eBGP, next-hop-unchanged) without originating or terminating VTEPs.
+    evpn_role: server
+
+  nodes:
+    - name: dc1-ss1
+      id: 101
+      mgmt_ip: 192.0.2.11/24
+    - name: dc1-ss2
+      id: 102
+      mgmt_ip: 192.0.2.12/24

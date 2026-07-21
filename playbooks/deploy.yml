@@ -1,0 +1,28 @@
+---
+# Deploys the built configs to CloudVision as a Service (CVaaS) using the
+# arista.avd.cv_deploy role: creates/builds a Workspace, and optionally
+# submits it + runs a Change Control.
+#
+# Required environment variables (populate from GitHub Actions secrets):
+#   CV_SERVER  - CVaaS cluster FQDN for your region, e.g. www.cv-prod-us-central1-a.arista.io
+#   CV_TOKEN   - CVaaS service-account API token
+#
+# Extra vars to control rollout behavior (see .github/workflows/deploy.yml):
+#   cv_submit_workspace   (default true)  - submit the Workspace, don't leave it pending
+#   cv_run_change_control (default false) - require an explicit opt-in to auto-run the CC
+- name: Deploy fabric configuration to CloudVision
+  hosts: FABRIC
+  connection: local
+  gather_facts: false
+  vars:
+    cv_server: "{{ lookup('env', 'CV_SERVER') }}"
+    cv_token: "{{ lookup('env', 'CV_TOKEN') }}"
+    cv_verify_certs: true
+    cv_submit_workspace: true
+    cv_run_change_control: false
+  tasks:
+    - name: Push device configuration/tags to CloudVision
+      run_once: true
+      delegate_to: localhost
+      ansible.builtin.import_role:
+        name: arista.avd.cv_deploy

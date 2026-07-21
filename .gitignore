@@ -1,0 +1,18 @@
+# AVD generated artifacts (rebuilt by CI on every run)
+intended/*
+!intended/.gitkeep
+documentation/*
+!documentation/.gitkeep
+
+# Ansible / Python
+collections/
+*.retry
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets / local overrides - never commit real credentials
+*.vault
+.env
+group_vars/**/vault.yml

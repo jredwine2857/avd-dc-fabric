@@ -1,0 +1,7 @@
+# Ansible collection requirements for this AVD fabric.
+# Install with: ansible-galaxy collection install -r requirements.yml
+collections:
+  - name: arista.avd
+    version: ">=6.3.0,<7.0.0"
+  - name: arista.eos
+    version: ">=7.0.0"

@@ -1,0 +1,72 @@
+---
+# ---------------------------------------------------------------------------
+# Fabric-wide design choices
+# ---------------------------------------------------------------------------
+fabric_name: FABRIC
+
+# Underlay: eBGP, unique ASN per device (AVD default; no IGP required).
+# Overlay: eBGP EVPN, unique ASN per leaf pair. Super-spines and pod-spines
+# both act as EVPN route-servers (next-hop-unchanged) relaying EVPN routes
+# between leaf ASNs across pods, without terminating the overlay themselves.
+underlay_routing_protocol: ebgp
+overlay_routing_protocol: ebgp
+
+# Generate CSVs describing fabric links/topology alongside the docs.
+eos_designs_documentation:
+  topology_csv: true
+  p2p_links_csv: true
+
+# eAPI is required by the anta_runner validation role (playbooks/validate.yml).
+# It is not used for configuration deployment - that goes through CloudVision
+# via cv_deploy (playbooks/deploy.yml).
+management_eapi:
+  enabled: true
+
+# Placeholder - replace with your real out-of-band management gateway.
+mgmt_gateway: 192.0.2.1
+
+# Bundle EVPN routes per VLAN-aware-bundle instead of per-VLAN once tenants
+# are defined in group_vars/EVPN_SERVICES - reduces BGP EVPN route count.
+evpn_vlan_aware_bundles: true
+
+# Assigns node_type by hostname pattern so it doesn't need to be repeated
+# per-node in the POD/SUPERSPINES group_vars files.
+default_node_types:
+  - node_type: super-spine
+    match_hostnames:
+      - ".*-ss[0-9]+$"
+  - node_type: spine
+    match_hostnames:
+      - ".*-spine[0-9]+$"
+  - node_type: l3leaf
+    match_hostnames:
+      - ".*-leaf[0-9]+[a-z]$"
+
+# Placeholder interface ranges - replace Ethernet numbering to match your
+# actual hardware platform(s) once real gear/port-maps are known.
+default_interfaces:
+  - types: [super-spine]
+    platforms: [default]
+    downlink_interfaces: [Ethernet1-32]
+  - types: [spine]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-4]
+    downlink_interfaces: [Ethernet5-32]
+  - types: [l3leaf]
+    platforms: [default]
+    uplink_interfaces: [Ethernet1-4]
+    mlag_interfaces: [Ethernet5-6]
+
+# Local device admin - replace with your real AAA/TACACS+ integration.
+# Password hash below is a non-functional placeholder, not a real credential.
+aaa_settings:
+  local_users:
+    - name: admin
+      privilege: 15
+      role: network-admin
+      no_password: true
+
+ntp_settings:
+  server_vrf: use_mgmt_interface_vrf
+  servers:
+    - name: 0.pool.ntp.org

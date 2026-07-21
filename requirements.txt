@@ -1,0 +1,4 @@
+# Python requirements matching arista.avd collection v6.3.0.
+# Pin pyavd to the same version as the arista.avd collection above.
+ansible-core>=2.17,<2.19
+pyavd==6.3.0
