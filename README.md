@@ -17,10 +17,9 @@ variable does not have a native `ibgp` option (only `ebgp`, `ospf[-ldp]`,
 `isis` variants, or `none` - iBGP is only valid as an **overlay** protocol).
 This repo uses AVD's default, most battle-tested pattern instead: eBGP for
 both underlay and overlay, which is what most Arista hyperscale reference
-designs run in production. If you specifically need iBGP overlay with
-spine route-reflectors instead, that's a one-line change
-(`overlay_routing_protocol: ibgp` in `group_vars/FABRIC/fabric_variables.yml`
-plus a shared overlay `bgp_as` per group) - ask and it can be re-plumbed.
+designs run in production. Switching to an iBGP overlay with spine
+route-reflectors is a one-line change (`overlay_routing_protocol: ibgp` in
+`group_vars/FABRIC/fabric_variables.yml`) plus a shared overlay `bgp_as` per group.
 
 ## Topology
 
